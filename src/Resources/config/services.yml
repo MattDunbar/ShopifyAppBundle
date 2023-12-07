@@ -1,4 +1,7 @@
 services:
+    MattDunbar\ShopifyAppBundle\:
+        autowire: true
+        autoconfigure: true
     MattDunbar\ShopifyAppBundle\Service\ShopifyApi:
         arguments:
             $appUrlKey: '%env(SHOPIFY_APP_URL_KEY)%'
