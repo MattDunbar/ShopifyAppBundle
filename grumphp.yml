@@ -1,0 +1,9 @@
+grumphp:
+    tasks:
+        phpcs:
+            standard: PSR12
+            ignore_patterns: [ ]
+        phpstan:
+            level: 9
+        phpunit:
+            always_execute: true

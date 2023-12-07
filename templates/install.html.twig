@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    <style type="text/css">
+        #install {
+            text-align: center;
+        }
+        #install-title {
+            text-align: center;
+            font-size: 24px;
+        }
+        #install label:after {
+            content: ":";
+        }
+        #install input {
+            width: 200px;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #install_install {
+            width: 200px;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <h1 id="install-title">Install App</h1>
+    {{ form(form) }}
+{% endblock %}
