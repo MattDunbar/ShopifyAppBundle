@@ -7,6 +7,7 @@ use MattDunbar\ShopifyAppBundle\EntityFactory\InstallFactory;
 use MattDunbar\ShopifyAppBundle\Form\InstallType;
 use MattDunbar\ShopifyAppBundle\Service\ShopifyApi;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,19 +25,26 @@ class InstallController extends AbstractController
      * @var ShopifyApi $shopifyApi
      */
     protected ShopifyApi $shopifyApi;
+    /**
+     * @var FormFactory $formFactory
+     */
+    protected FormFactory $formFactory;
 
     /**
      * Constructor
      *
      * @param InstallFactory $installFactory
-     * @param ShopifyApi     $shopifyApi
+     * @param ShopifyApi $shopifyApi
+     * @param FormFactory $formFactory
      */
     public function __construct(
         InstallFactory $installFactory,
         ShopifyApi $shopifyApi,
+        FormFactory $formFactory
     ) {
         $this->installFactory = $installFactory;
         $this->shopifyApi = $shopifyApi;
+        $this->formFactory = $formFactory;
     }
 
     /**
@@ -48,7 +56,7 @@ class InstallController extends AbstractController
     #[Route('/shopify/install', name: 'app_install')]
     public function index(Request $request): Response
     {
-        $installForm = $this->createForm(InstallType::class, $this->installFactory->create());
+        $installForm = $this->formFactory->create(InstallType::class, $this->installFactory->create());
         $installForm->handleRequest($request);
 
         if ($installForm->isSubmitted() && $installForm->isValid()) {
