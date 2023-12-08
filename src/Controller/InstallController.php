@@ -8,6 +8,7 @@ use MattDunbar\ShopifyAppBundle\Form\InstallType;
 use MattDunbar\ShopifyAppBundle\Service\ShopifyApi;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactory;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,21 +27,21 @@ class InstallController extends AbstractController
      */
     protected ShopifyApi $shopifyApi;
     /**
-     * @var FormFactory $formFactory
+     * @var FormFactoryInterface $formFactory
      */
-    protected FormFactory $formFactory;
+    protected FormFactoryInterface $formFactory;
 
     /**
      * Constructor
      *
      * @param InstallFactory $installFactory
      * @param ShopifyApi $shopifyApi
-     * @param FormFactory $formFactory
+     * @param FormFactoryInterface $formFactory
      */
     public function __construct(
         InstallFactory $installFactory,
         ShopifyApi $shopifyApi,
-        FormFactory $formFactory
+        FormFactoryInterface $formFactory
     ) {
         $this->installFactory = $installFactory;
         $this->shopifyApi = $shopifyApi;
