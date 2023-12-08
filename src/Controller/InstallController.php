@@ -33,8 +33,8 @@ class InstallController extends AbstractController
     /**
      * Constructor
      *
-     * @param InstallFactory $installFactory
-     * @param ShopifyApi $shopifyApi
+     * @param InstallFactory       $installFactory
+     * @param ShopifyApi           $shopifyApi
      * @param FormFactoryInterface $formFactory
      */
     public function __construct(
