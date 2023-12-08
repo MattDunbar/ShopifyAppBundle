@@ -19,7 +19,7 @@ class ShopifyAppBundle extends AbstractBundle
         ContainerConfigurator $containerConfigurator,
         ContainerBuilder $containerBuilder
     ): void {
-        $containerConfigurator->import(__DIR__ . '/Resources/services.yaml');
-        $containerConfigurator->import(__DIR__ . '/Resources/config.yaml');
+        $containerConfigurator->import(__DIR__ . '/Resources/config/services.yaml');
+        $containerConfigurator->import(__DIR__ . '/Resources/config/config.yaml');
     }
 }
