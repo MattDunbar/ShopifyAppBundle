@@ -64,9 +64,9 @@ class InstallController extends AbstractController
         }
 
         return $this->render(
-            '@shopifyapp/install.html.twig',
+            '@ShopifyApp/install.html.twig',
             [
-            'form' => $installForm->createView(),
+                'form' => $installForm->createView(),
             ]
         );
     }
