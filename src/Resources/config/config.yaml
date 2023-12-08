@@ -1,0 +1,4 @@
+"%kernel.root_dir%/../vendor/acme/foo-bar/templates": foo_bar
+twig:
+    paths:
+        "%kernel.root_dir%/../vendor/mattdunbar/shopify-app-bundle/templates": shopify_app

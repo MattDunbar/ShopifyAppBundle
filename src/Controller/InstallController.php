@@ -7,7 +7,6 @@ use MattDunbar\ShopifyAppBundle\EntityFactory\InstallFactory;
 use MattDunbar\ShopifyAppBundle\Form\InstallType;
 use MattDunbar\ShopifyAppBundle\Service\ShopifyApi;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -65,7 +64,7 @@ class InstallController extends AbstractController
         }
 
         return $this->render(
-            'install.html.twig',
+            '@shopifyapp/install.html.twig',
             [
             'form' => $installForm->createView(),
             ]
