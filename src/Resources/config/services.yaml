@@ -5,7 +5,7 @@ services:
 
 
     MattDunbar\ShopifyAppBundle\:
-        resource: '../vendor/mattdunbar/shopify-app-bundle/src/'
+        resource: '../../'
 
     MattDunbar\ShopifyAppBundle\Controller\InstallController:
         arguments:
