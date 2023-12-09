@@ -8,17 +8,14 @@ services:
         resource: '../../'
 
     MattDunbar\ShopifyAppBundle\Controller\InstallController:
-        arguments:
-            - '@MattDunbar\ShopifyAppBundle\EntityFactory\InstallFactory'
-            - '@MattDunbar\ShopifyAppBundle\Service\ShopifyApi'
-            - '@form.factory'
-            - '@twig'
+#        arguments:
+#            $twig: '@twig'
         tags: [ 'controller.service_arguments' ]
         calls:
             -   method: setContainer
                 arguments: [ '@Psr\Container\ContainerInterface' ]
 
-    MattDunbar\ShopifyAppBundle\Service\ShopifyApi:
+    MattDunbar\ShopifyAppBundle\Service\ShopifyApi\Config:
         arguments:
             $appUrlKey: '%env(SHOPIFY_APP_URL_KEY)%'
             $apiKey: '%env(SHOPIFY_API_KEY)%'

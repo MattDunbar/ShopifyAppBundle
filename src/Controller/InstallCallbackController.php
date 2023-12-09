@@ -3,6 +3,8 @@
 namespace MattDunbar\ShopifyAppBundle\Controller;
 
 use MattDunbar\ShopifyAppBundle\Service\ShopifyApi;
+use MattDunbar\ShopifyAppBundle\Service\ShopifyApi\Config;
+use MattDunbar\ShopifyAppBundle\Service\ShopifyApi\OAuth;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,18 +13,26 @@ use Symfony\Component\Routing\Annotation\Route;
 class InstallCallbackController extends AbstractController
 {
     /**
-     * @var ShopifyApi $shopifyApi
+     * @var OAuth $oAuth
      */
-    protected ShopifyApi $shopifyApi;
+    protected OAuth $oAuth;
+    /**
+     * @var Config $config
+     */
+    protected Config $config;
+
     /**
      * Constructor
      *
-     * @param ShopifyApi $shopifyApi
+     * @param OAuth $oAuth
+     * @param Config $config
      */
     public function __construct(
-        ShopifyApi $shopifyApi,
+        OAuth $oAuth,
+        Config $config
     ) {
-        $this->shopifyApi = $shopifyApi;
+        $this->oAuth = $oAuth;
+        $this->config = $config;
     }
 
     /**
@@ -31,22 +41,22 @@ class InstallCallbackController extends AbstractController
      * @param  Request $request
      * @return RedirectResponse
      */
-    #[Route('/shopify/install/callback', name: 'app_install_callback')]
+    #[Route('/shopify/install/callback', name: 'shopify_app_install_callback')]
     public function callback(Request $request): RedirectResponse
     {
         if ($request->getSession()->get('shopify_state') !== $request->query->get('state')) {
-            return $this->redirectToRoute('app_install');
+            return $this->redirectToRoute('shopify_app_install');
         }
 
-        $shop = $this->shopifyApi->saveAccessToken(
+        $shop = $this->oAuth->finishInstall(
             (string)$request->query->get('shop', ''),
             (string)$request->query->get('code', ''),
         );
 
         if ($shop === null) {
-            return $this->redirectToRoute('app_install');
+            return $this->redirectToRoute('shopify_app_install');
         }
 
-        return $this->redirect($shop->getAppAdminUrl($this->shopifyApi->getAppUrlKey()));
+        return $this->redirect($shop->getAppAdminUrl($this->config->getAppUrlKey()));
     }
 }

@@ -6,6 +6,7 @@ use MattDunbar\ShopifyAppBundle\Entity\Install;
 use MattDunbar\ShopifyAppBundle\EntityFactory\InstallFactory;
 use MattDunbar\ShopifyAppBundle\Form\InstallType;
 use MattDunbar\ShopifyAppBundle\Service\ShopifyApi;
+use MattDunbar\ShopifyAppBundle\Service\ShopifyApi\OAuth;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
@@ -22,9 +23,9 @@ class InstallController extends AbstractController
      */
     protected InstallFactory $installFactory;
     /**
-     * @var ShopifyApi $shopifyApi
+     * @var OAuth $oAuth
      */
-    protected ShopifyApi $shopifyApi;
+    protected OAuth $oAuth;
     /**
      * @var FormFactoryInterface $formFactory
      */
@@ -33,17 +34,17 @@ class InstallController extends AbstractController
     /**
      * Constructor
      *
-     * @param InstallFactory       $installFactory
-     * @param ShopifyApi           $shopifyApi
+     * @param InstallFactory $installFactory
+     * @param OAuth $oAuth
      * @param FormFactoryInterface $formFactory
      */
     public function __construct(
         InstallFactory $installFactory,
-        ShopifyApi $shopifyApi,
+        OAuth $oAuth,
         FormFactoryInterface $formFactory
     ) {
         $this->installFactory = $installFactory;
-        $this->shopifyApi = $shopifyApi;
+        $this->oAuth = $oAuth;
         $this->formFactory = $formFactory;
     }
 
@@ -53,7 +54,7 @@ class InstallController extends AbstractController
      * @param  Request $request
      * @return Response
      */
-    #[Route('/shopify/install', name: 'app_install')]
+    #[Route('/shopify/install', name: 'shopify_app_install')]
     public function index(Request $request): Response
     {
         $installForm = $this->formFactory->create(InstallType::class, $this->installFactory->create());
@@ -81,12 +82,12 @@ class InstallController extends AbstractController
     protected function handleSubmit(Request $request, FormInterface $installForm): Response
     {
         /**
- * @var Install $install
-*/
+         * @var Install $install
+         */
         $install = $installForm->getData();
-        $installDetails = $this->shopifyApi->getInstallDetails(
+        $installDetails = $this->oAuth->startInstall(
             $install->getShopifyDomain(),
-            $this->generateUrl('app_install_callback', [], UrlGeneratorInterface::ABSOLUTE_URL)
+            $this->generateUrl('shopify_app_install_callback', [], UrlGeneratorInterface::ABSOLUTE_URL)
         );
         $request->getSession()->set('shopify_state', $installDetails['state']);
         return $this->redirect($installDetails['url']);
