@@ -43,9 +43,7 @@ class Response
     }
 
     /**
-     * Accepts a / separated path to the target element. Returns null if not found.
-     *
-     * E.g. 'data/shop/name' returns $this->getData()['data']['shop']['name'
+     * Accepts a separated path to the target element. Returns null if not found.
      *
      * @param string $path
      * @param string $separator
@@ -53,9 +51,36 @@ class Response
      */
     public function getStringDataByPath(string $path, string $separator = '/'): ?string
     {
+        $data = $this->getMixedDataByPath($path, $separator);
+        return is_string($data) ? $data : null;
+    }
+
+    /**
+     * Accepts a separated path to the target element. Returns null if not found.
+     *
+     * @param string $path
+     * @param string $separator
+     * @return Response|null
+     */
+    public function getResponseDataByPath(string $path, string $separator = '/'): ?Response
+    {
+        $data = $this->getMixedDataByPath($path, $separator);
+        return is_array($data) ? new Response($data) : null;
+    }
+
+    /**
+     * Accepts a separated path to the target element. Returns null if not found.
+     *
+     * @param string $path
+     * @param string $separator
+     * @return mixed
+     */
+    public function getMixedDataByPath(string $path, string $separator = '/'): mixed
+    {
         if ($separator === '') {
             $separator = '/';
         }
+
         $pathParts = explode($separator, $path);
         $data = $this->getData();
         foreach ($pathParts as $pathPart) {
@@ -65,10 +90,6 @@ class Response
             $data = $data[$pathPart];
         }
 
-        if (is_array($data)) {
-            return null;
-        }
-
-        return (string) $data;
+        return $data;
     }
 }
