@@ -45,7 +45,7 @@ class OAuth
         $installSecret = Uuid::uuid4()->toString();
         $query = [
             'client_id' => Context::$API_KEY,
-            'scope' => Context::$SCOPES,
+            'scope' => Context::$SCOPES->toString(),
             'redirect_uri' => $redirectUri,
             'state' => $installSecret,
             'grant_options[]' => '',
