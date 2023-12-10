@@ -4,6 +4,7 @@ namespace MattDunbar\ShopifyAppBundle\Service\ShopifyApi;
 
 use MattDunbar\ShopifyAppBundle\Entity\Shop;
 use Shopify\Auth\Session;
+use Shopify\Context;
 use Shopify\Exception\UninitializedContextException;
 use Shopify\Rest\Admin2023_10\Product;
 use Shopify\Utils;
@@ -29,16 +30,7 @@ class Rest
      */
     public function getProductCount(Shop $shop): ?int
     {
-        /** @var string $shopDomain */
-        $shopDomain = $shop->getShopDomain();
-        if ($shopDomain == null) {
-            return null;
-        }
-        /** @var Session $session */
-        $session = $this->getSession($shopDomain);
-        if ($session == null) {
-            return null;
-        }
+        $session = $this->getSession($shop);
 
         $productCountResponse = Product::count($session);
         if (is_array($productCountResponse) && isset($productCountResponse['count'])) {
@@ -51,16 +43,16 @@ class Rest
     /**
      * Prepare session for API call
      *
-     * @param string $shop
-     * @return Session|null
+     * @param Shop $shop
+     * @return Session
      */
-    private function getSession(string $shop): ?Session
+    private function getSession(Shop $shop): Session
     {
         $this->config->initialize();
-        try {
-            return Utils::loadOfflineSession($shop);
-        } catch (UninitializedContextException $e) {
-            return null;
-        }
+        $session = new Session('session', $shop->getShopDomain(), false, 'state');
+        $session->setAccessToken($shop->getAccessToken());
+        $session->setScope($shop->getScope());
+
+        return $session;
     }
 }
