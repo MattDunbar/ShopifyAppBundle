@@ -15,7 +15,7 @@ class Response
     public function __construct(
         array $data = []
     ) {
-        $this->data = $data;
+        $this->setData($data);
     }
 
     /**
@@ -26,9 +26,14 @@ class Response
      */
     public function setData(array $data): void
     {
+        if (isset($data['extensions'])) {
+            unset($data['extensions']);
+        }
+
         if (sizeof($data) == 1 && isset($data['data']) && is_array($data['data'])) {
             $data = $data['data'];
         }
+
         $this->data = $data;
     }
 
