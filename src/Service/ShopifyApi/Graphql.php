@@ -53,10 +53,10 @@ class Graphql
      * @param string $query
      * @param Shop $shop
      *
-     * @return array<mixed>
+     * @return Response
      * @TODO Refactor, SRP + Build Graphql Response class
      */
-    public function bulkExecuteSync(string $query, Shop $shop): array
+    public function bulkExecuteSync(string $query, Shop $shop): Response
     {
         $response = $this->execute(
             <<<QUERY
@@ -106,7 +106,7 @@ class Graphql
                 );
                 $rawResponse = $fullResponse->getContent();
                 $responseLines = explode("\n", $rawResponse);
-                return [
+                return new Response([
                     'status' => 'COMPLETED',
                     'data' => array_map(
                         function ($line) {
@@ -114,12 +114,12 @@ class Graphql
                         },
                         $responseLines
                     )
-                ];
+                ]);
             } catch (TransportExceptionInterface | HttpExceptionInterface $e) {
-                return ['status' => 'FAILED', 'data' => null];
+                return new Response(['status' => 'FAILED', 'data' => null]);
             }
         }
 
-        return ['status' => 'FAILED', 'data' => null];
+        return new Response(['status' => 'FAILED', 'data' => null]);
     }
 }
