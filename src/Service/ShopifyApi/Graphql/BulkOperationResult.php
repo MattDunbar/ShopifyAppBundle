@@ -1,6 +1,6 @@
 <?php
 
-namespace MattDunbar\ShopifyAppBundle\Service\ShopifyApi;
+namespace MattDunbar\ShopifyAppBundle\Service\ShopifyApi\Graphql;
 
 class BulkOperationResult
 {

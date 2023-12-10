@@ -1,8 +1,10 @@
 <?php
 
-namespace MattDunbar\ShopifyAppBundle\Service\ShopifyApi;
+namespace MattDunbar\ShopifyAppBundle\Service\ShopifyApi\Graphql;
 
 use MattDunbar\ShopifyAppBundle\Entity\Shop;
+use MattDunbar\ShopifyAppBundle\Service\ShopifyApi\Graphql;
+use MattDunbar\ShopifyAppBundle\Service\ShopifyApi\Response;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
