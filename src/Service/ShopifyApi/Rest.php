@@ -49,9 +49,9 @@ class Rest
     private function getSession(Shop $shop): Session
     {
         $this->config->initialize();
-        $session = new Session('session', $shop->getShopDomain(), false, 'state');
-        $session->setAccessToken($shop->getAccessToken());
-        $session->setScope($shop->getScope());
+        $session = new Session('session', (string) $shop->getShopDomain(), false, 'state');
+        $session->setAccessToken((string) $shop->getAccessToken());
+        $session->setScope((string) $shop->getScope());
 
         return $session;
     }
