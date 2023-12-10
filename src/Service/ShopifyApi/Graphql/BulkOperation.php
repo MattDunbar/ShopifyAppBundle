@@ -103,6 +103,9 @@ class BulkOperation
             );
             $rawResponse = $fullResponse->getContent();
             $responseLines = explode("\n", $rawResponse);
+            if ($responseLines[count($responseLines) - 1] === '') {
+                array_pop($responseLines);
+            }
             return new BulkOperationResult(
                 array_map(
                     function ($line) {
