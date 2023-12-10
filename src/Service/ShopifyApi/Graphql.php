@@ -65,14 +65,15 @@ class Graphql
                             query: """
                                 $query
                             """
-                    ) {
-                        bulkOperation {
-                            id
-                            status
-                        }
-                        userErrors {
-                            field
-                            message
+                        ) {
+                            bulkOperation {
+                                id
+                                status
+                            }
+                            userErrors {
+                                field
+                                message
+                            }
                         }
                     }
                 QUERY,
