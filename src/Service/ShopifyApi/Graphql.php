@@ -37,9 +37,10 @@ class Graphql
      */
     public function execute(string $query, Shop $shop): Response
     {
+        $this->config->initialize();
         try {
             $client = new ShopifyGraphql((string) $shop->getShopDomain(), $shop->getAccessToken());
-            $response = $client->query(data: $query)->getDecodedBody();
+            $response = $client->query($query)->getDecodedBody();
             if (is_array($response)) {
                 return new Response($response);
             }
@@ -60,23 +61,23 @@ class Graphql
     {
         $response = $this->execute(
             <<<QUERY
-                    mutation {
-                        bulkOperationRunQuery(
-                            query: """
-                                $query
-                            """
-                        ) {
-                            bulkOperation {
-                                id
-                                status
-                            }
-                            userErrors {
-                                field
-                                message
-                            }
+                mutation {
+                    bulkOperationRunQuery(
+                        query: """
+                            $query
+                        """
+                    ) {
+                        bulkOperation {
+                            id
+                            status
+                        }
+                        userErrors {
+                            field
+                            message
                         }
                     }
-                QUERY,
+                }
+            QUERY,
             $shop
         );
 
@@ -86,14 +87,14 @@ class Graphql
             sleep(30);
             $pollingResponse = $this->execute(
                 <<<QUERY
-                        query {
-                            currentBulkOperation {
-                                id
-                                status
-                                url
-                            }
+                    query {
+                        currentBulkOperation {
+                            id
+                            status
+                            url
                         }
-                    QUERY,
+                    }
+                QUERY,
                 $shop
             );
             $status = $pollingResponse->getStringDataByPath('currentBulkOperation/status');
