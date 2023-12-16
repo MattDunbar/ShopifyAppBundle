@@ -2,8 +2,6 @@
 
 namespace MattDunbar\ShopifyAppBundle\Service\ShopifyApi;
 
-use MattDunbar\ShopifyAppBundle\Repository\ShopRepository;
-use Psr\Log\LoggerInterface;
 use Shopify\Auth\FileSessionStorage;
 use Shopify\Context;
 use Shopify\Exception\MissingArgumentException;

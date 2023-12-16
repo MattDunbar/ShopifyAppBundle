@@ -52,7 +52,7 @@ class Response
      *
      * @param string $path
      * @param string $separator
-     * @return string|null
+     * @return ?string
      */
     public function getStringDataByPath(string $path, string $separator = '/'): ?string
     {
@@ -65,7 +65,7 @@ class Response
      *
      * @param string $path
      * @param string $separator
-     * @return Response|null
+     * @return ?Response
      */
     public function getResponseDataByPath(string $path, string $separator = '/'): ?Response
     {

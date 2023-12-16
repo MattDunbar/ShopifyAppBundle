@@ -62,7 +62,7 @@ class OAuth
      *
      * @param string $shopDomain
      * @param string $code
-     * @return Shop|null
+     * @return ?Shop
      */
     public function finishInstall(string $shopDomain, string $code): ?Shop
     {

@@ -21,14 +21,12 @@ class ShopRepository extends ServiceEntityRepository
      * Find One By Shop Domain
      *
      * @param  string $shopDomain
-     * @return Shop|null
+     * @return ?Shop
      */
     public function findOneByShopDomain(string $shopDomain): ?Shop
     {
         try {
-            /**
- * @var Shop $shop
-*/
+            /** @var Shop $shop */
             $shop = $this->createQueryBuilder('s')
                 ->andWhere('s.shopDomain = :val')
                 ->setParameter('val', $shopDomain)
@@ -41,6 +39,8 @@ class ShopRepository extends ServiceEntityRepository
     }
 
     /**
+     * Find or create by shop domain
+     *
      * @param  string $shopDomain
      * @return Shop
      */
@@ -54,6 +54,14 @@ class ShopRepository extends ServiceEntityRepository
         return $shop;
     }
 
+    /**
+     * Create or update by shop domain
+     *
+     * @param string $shopDomain
+     * @param string $accessToken
+     * @param string $scope
+     * @return Shop
+     */
     public function createOrUpdateByShopDomain(string $shopDomain, string $accessToken, string $scope): Shop
     {
         $shop = $this->findOrCreateByShopDomain($shopDomain);

@@ -2,31 +2,56 @@
 
 namespace MattDunbar\ShopifyAppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use MattDunbar\ShopifyAppBundle\Repository\ManagedBulkOperationRepository;
 use MattDunbar\ShopifyAppBundle\Repository\ShopRepository;
 use MattDunbar\ShopifyAppBundle\Service\ShopifyApi;
 
 #[ORM\Entity(repositoryClass: ShopRepository::class)]
 class Shop
 {
+    /**
+     * @var ?int $id
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
+    /**
+     * @var ?string $shopDomain
+     */
     #[ORM\Column(length: 255)]
     private ?string $shopDomain = null;
-
+    /**
+     * @var ?string $accessToken
+     */
     #[ORM\Column(length: 255)]
     private ?string $accessToken = null;
-
+    /**
+     * @var ?string $scope
+     */
     #[ORM\Column(length: 255)]
     private ?string $scope = null;
+    /**
+     * @var Collection<int, ManagedBulkOperation> $managedBulkOperations
+     */
+    #[ORM\OneToMany(mappedBy: 'shop', targetEntity: ManagedBulkOperation::class)]
+    private Collection $managedBulkOperations;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->managedBulkOperations = new ArrayCollection();
+    }
 
     /**
      * Get the value of id
      *
-     * @return int|null
+     * @return ?int
      */
     public function getId(): ?int
     {
@@ -36,7 +61,7 @@ class Shop
     /**
      * Get the value of shopDomain
      *
-     * @return string|null
+     * @return ?string
      */
     public function getShopDomain(): ?string
     {
@@ -59,7 +84,7 @@ class Shop
     /**
      * Get the value of accessToken
      *
-     * @return string|null
+     * @return ?string
      */
     public function getAccessToken(): ?string
     {
@@ -82,7 +107,7 @@ class Shop
     /**
      * Get the value of scope
      *
-     * @return string|null
+     * @return ?string
      */
     public function getScope(): ?string
     {
@@ -103,6 +128,16 @@ class Shop
     }
 
     /**
+     * Get managedBulkOperations
+     *
+     * @return Collection<int, ManagedBulkOperation>
+     */
+    public function getManagedBulkOperations(): Collection
+    {
+        return $this->managedBulkOperations;
+    }
+
+    /**
      * Get Shop's Admin App URL
      *
      * @param  string $appUrlKey
@@ -111,5 +146,33 @@ class Shop
     public function getAppAdminUrl(string $appUrlKey): string
     {
         return "https://{$this->shopDomain}/admin/apps/{$appUrlKey}";
+    }
+
+    /**
+     * Add Managed Bulk Operation
+     *
+     * @param ManagedBulkOperation $managedBulkOperation
+     * @return Shop
+     */
+    public function addManagedBulkOperation(ManagedBulkOperation $managedBulkOperation): Shop
+    {
+        if (!$this->managedBulkOperations->contains($managedBulkOperation)) {
+            $this->managedBulkOperations->add($managedBulkOperation);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove Managed Bulk Operation
+     *
+     * @param ManagedBulkOperation $managedBulkOperation
+     * @return Shop
+     */
+    public function removeManagedBulkOperation(ManagedBulkOperation $managedBulkOperation): Shop
+    {
+        $this->managedBulkOperations->removeElement($managedBulkOperation);
+
+        return $this;
     }
 }

@@ -2,9 +2,12 @@
 
 namespace MattDunbar\ShopifyAppBundle\Service\ShopifyApi\Graphql;
 
+use DateTimeImmutable;
+use MattDunbar\ShopifyAppBundle\Entity\ManagedBulkOperation;
+use MattDunbar\ShopifyAppBundle\Entity\ManagedBulkOperation\Status;
 use MattDunbar\ShopifyAppBundle\Entity\Shop;
+use MattDunbar\ShopifyAppBundle\Repository\ManagedBulkOperationRepository;
 use MattDunbar\ShopifyAppBundle\Service\ShopifyApi\Graphql;
-use MattDunbar\ShopifyAppBundle\Service\ShopifyApi\Response;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -19,19 +22,26 @@ class BulkOperation
      * @var HttpClientInterface $httpClient
      */
     protected HttpClientInterface $httpClient;
+    /**
+     * @var ManagedBulkOperationRepository $managedBulkOperationRepository
+     */
+    protected ManagedBulkOperationRepository $managedBulkOperationRepository;
 
     /**
      * Constructor
      *
      * @param Graphql $graphql
      * @param HttpClientInterface $httpClient
+     * @param ManagedBulkOperationRepository $managedBulkOperationRepository
      */
     public function __construct(
         Graphql $graphql,
-        HttpClientInterface $httpClient
+        HttpClientInterface $httpClient,
+        ManagedBulkOperationRepository $managedBulkOperationRepository
     ) {
         $this->graphql = $graphql;
         $this->httpClient = $httpClient;
+        $this->managedBulkOperationRepository = $managedBulkOperationRepository;
     }
 
     /**
@@ -39,11 +49,11 @@ class BulkOperation
      *
      * @param string $query
      * @param Shop $shop
-     * @return Response
+     * @return ManagedBulkOperation
      */
-    public function runQuery(string $query, Shop $shop): Response
+    public function runQuery(string $query, Shop $shop): ManagedBulkOperation
     {
-        return $this->graphql->execute(
+        $newOperation = $this->graphql->execute(
             <<<QUERY
                 mutation {
                     bulkOperationRunQuery(
@@ -64,17 +74,28 @@ class BulkOperation
             QUERY,
             $shop
         );
+
+
+        $managedBulkOperation = $this->managedBulkOperationRepository->create();
+        $managedBulkOperation->setShop($shop);
+        $managedBulkOperation->setOperationId(
+            (string) $newOperation->getStringDataByPath('bulkOperationRunQuery/bulkOperation/id')
+        );
+        $managedBulkOperation->setStatus(Status::CREATED);
+        $this->managedBulkOperationRepository->save($managedBulkOperation);
+
+        return $managedBulkOperation;
     }
 
     /**
      * Call currentBulkOperation
      *
      * @param Shop $shop
-     * @return Response
+     * @return ManagedBulkOperation
      */
-    public function currentOperation(Shop $shop): Response
+    public function currentOperation(Shop $shop): ManagedBulkOperation
     {
-        return $this->graphql->execute(
+        $currentOperation = $this->graphql->execute(
             <<<QUERY
                 query {
                     currentBulkOperation {
@@ -86,20 +107,44 @@ class BulkOperation
             QUERY,
             $shop
         );
+        $managedBulkOperation = $this->managedBulkOperationRepository->findOneBy(
+            [
+                'shop' => $shop,
+                'operationId' => $currentOperation->getStringDataByPath('currentBulkOperation/id')
+            ]
+        );
+        // @TODO: SRP; Move response processing into a separate class
+        if ($managedBulkOperation === null) {
+            $managedBulkOperation = $this->managedBulkOperationRepository->create();
+            $managedBulkOperation->setShop($shop);
+            $managedBulkOperation->setOperationId(
+                (string) $currentOperation->getStringDataByPath('currentBulkOperation/id')
+            );
+        }
+        $managedBulkOperation->setStatus(
+            (string) $currentOperation->getStringDataByPath('currentBulkOperation/status')
+        );
+        $managedBulkOperation->setResponseUrl(
+            $currentOperation->getStringDataByPath('currentBulkOperation/url')
+        );
+        $managedBulkOperation->setLastPolled(new DateTimeImmutable());
+        $this->managedBulkOperationRepository->save($managedBulkOperation);
+
+        return $managedBulkOperation;
     }
 
     /**
      * Process bulk operation result
      *
-     * @param Response $currentResponse
+     * @param ManagedBulkOperation $managedBulkOperation
      * @return BulkOperationResult
      */
-    public function processResult(Response $currentResponse): BulkOperationResult
+    public function processResult(ManagedBulkOperation $managedBulkOperation): BulkOperationResult
     {
         try {
             $fullResponse = $this->httpClient->request(
                 'GET',
-                (string) $currentResponse->getStringDataByPath('currentBulkOperation/url')
+                (string) $managedBulkOperation->getResponseUrl()
             );
             $rawResponse = $fullResponse->getContent();
             $responseLines = explode("\n", $rawResponse);
@@ -131,15 +176,15 @@ class BulkOperation
         $this->runQuery($query, $shop);
 
         $status = 'STARTING';
-        $pollingResponse = null;
-        while ($status !== 'FAILED' && $status !== 'COMPLETED') {
+        $managedCurrentOperation = null;
+        while ($status != 'FAILED' && $status != 'COMPLETED') {
             sleep(30);
-            $pollingResponse = $this->currentOperation($shop);
-            $status = $pollingResponse->getStringDataByPath('currentBulkOperation/status');
+            $managedCurrentOperation = $this->currentOperation($shop);
+            $status = $managedCurrentOperation->getStatus();
         }
 
-        if ($status === 'COMPLETED') {
-            return $this->processResult($pollingResponse);
+        if ($status == 'COMPLETED') {
+            return $this->processResult($managedCurrentOperation);
         }
 
         return new BulkOperationResult([], 'FAILED');
