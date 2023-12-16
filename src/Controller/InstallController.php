@@ -5,7 +5,6 @@ namespace MattDunbar\ShopifyAppBundle\Controller;
 use MattDunbar\ShopifyAppBundle\Entity\Install;
 use MattDunbar\ShopifyAppBundle\EntityFactory\InstallFactory;
 use MattDunbar\ShopifyAppBundle\Form\InstallType;
-use MattDunbar\ShopifyAppBundle\Service\ShopifyApi;
 use MattDunbar\ShopifyAppBundle\Service\ShopifyApi\OAuth;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormFactoryInterface;

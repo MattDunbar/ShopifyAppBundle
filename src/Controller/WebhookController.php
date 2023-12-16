@@ -27,8 +27,14 @@ class WebhookController extends AbstractController
         $this->webhook = $webhook;
     }
 
+    /**
+     * Process Bulk Operation Webhook
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
     #[Route('/shopify/webhook/bulkoperation', name: 'shopify_app_webhook_bulkoperation')]
-    public function webhook(Request $request): JsonResponse
+    public function bulkoperation(Request $request): JsonResponse
     {
         if (!$this->webhook->verify()) {
             return $this->json(['error' => 'Invalid webhook signature'], Response::HTTP_FORBIDDEN);

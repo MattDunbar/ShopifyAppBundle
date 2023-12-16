@@ -8,8 +8,6 @@ services:
         resource: '../../'
 
     MattDunbar\ShopifyAppBundle\Controller\InstallController:
-#        arguments:
-#            $twig: '@twig'
         tags: [ 'controller.service_arguments' ]
         calls:
             -   method: setContainer
