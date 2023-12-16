@@ -41,12 +41,12 @@ class ManagedBulkOperation
     /**
      * @var ?int $totalRootEntities
      */
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $totalRootEntities = null;
     /**
      * @var ?int $rootEntitiesProcessed
      */
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $rootEntitiesProcessed = null;
     /**
      * @var ?Shop $shop
@@ -61,7 +61,7 @@ class ManagedBulkOperation
     /**
      * @var ?string $responseUrl
      */
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?string $responseUrl;
 
     /**
