@@ -82,6 +82,7 @@ class BulkOperation
             (string) $newOperation->getStringDataByPath('bulkOperationRunQuery/bulkOperation/id')
         );
         $managedBulkOperation->setStatus(Status::CREATED);
+        $managedBulkOperation->setLastPolled(new DateTimeImmutable());
         $this->managedBulkOperationRepository->save($managedBulkOperation);
 
         return $managedBulkOperation;
