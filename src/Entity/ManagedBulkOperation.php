@@ -61,7 +61,7 @@ class ManagedBulkOperation
     /**
      * @var ?string $responseUrl
      */
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: "text", nullable: true)]
     private ?string $responseUrl;
 
     /**
