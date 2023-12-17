@@ -4,10 +4,9 @@ namespace MattDunbar\ShopifyAppBundle\Service\ShopifyApi;
 
 use MattDunbar\ShopifyAppBundle\Entity\Shop;
 use Shopify\Auth\Session;
-use Shopify\Context;
-use Shopify\Exception\UninitializedContextException;
+use Shopify\Rest\Admin2023_10\CustomCollection;
 use Shopify\Rest\Admin2023_10\Product;
-use Shopify\Utils;
+use Shopify\Rest\Admin2023_10\SmartCollection;
 
 class Rest
 {
@@ -26,18 +25,38 @@ class Rest
      * Get Product Count
      *
      * @param Shop $shop
-     * @return ?int
+     * @return int
      */
-    public function getProductCount(Shop $shop): ?int
+    public function getProductCount(Shop $shop): int
     {
         $session = $this->getSession($shop);
 
         $productCountResponse = Product::count($session);
         if (is_array($productCountResponse) && isset($productCountResponse['count'])) {
-            return $productCountResponse['count'];
+            return (int) $productCountResponse['count'];
         }
 
-        return null;
+        return 0;
+    }
+
+    /**
+     * Get Collection Count
+     *
+     * @param Shop $shop
+     * @return int
+     */
+    public function getCollectionCount(Shop $shop): int
+    {
+        $session = $this->getSession($shop);
+        $count = 0;
+        $collectionCountResponses = [CustomCollection::count($session), SmartCollection::count($session)];
+        foreach ($collectionCountResponses as $collectionCountResponse) {
+            if (is_array($collectionCountResponse) && isset($collectionCountResponse['count'])) {
+                $count = $count + (int) $collectionCountResponse['count'];
+            }
+        }
+
+        return $count;
     }
 
     /**
